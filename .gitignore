@@ -1,7 +1,8 @@
-# Visual Studio 2015 user specific files
+# Visual Studio and VS Code user specific files
 .vs/
 .vscode/*
 **/.vscode/*
+.vsconfig
 
 # Compiled Object files
 *.slo
@@ -52,6 +53,7 @@ SourceArt/**/*.tga
 # Binary Files
 Binaries/*
 Plugins/*/Binaries/*
+/python/schola_examples/bin
 
 # Builds
 Build/*
@@ -77,37 +79,40 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-#pycache generated files
+# Pycache generated files
 **/__pycache__/*
 
-#Misc files and folders
+# Misc files and folders
 /enc_temp_folder/**
 documentation/*.bkp
 *.temp
 
-#ONNX files
+# ONNX files
 *.onnx
 
 # Don't ignore Bundled third party dependencies
 !/Plugins/**/*.lib
 !/Plugins/**/*.a
 
-# zipped files
+# Zipped files
 /Plugins/Schola/Resources/**/*.zip
 /Content/ZippedModels/*.zip
 
-# Build python libraries
+# Built python libraries
 *.egg-info/
 *.egg
 
-#Training checkpoints
-**/ckpt/*
-
-#Built documentation
+# Built documentation
 /Docs/Doxygen/html/*
 /Docs/Sphinx/_build/*
 /Docs/Doxygen/xml/*
 
-#pytest folder
+# Training checkpoints
+**/ckpt/*
+
+# Pytest folder
 /pytest-schola/*
 
+# Intermediate Unreal Content Folders
+/Content/__ExternalActors__
+/Content/__ExternalObjects__

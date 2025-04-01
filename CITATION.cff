@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+title: Schola
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Alexander
+    family-names: Cann
+    name-particle: Alexander
+    email: alexcann@amd.com
+    affiliation: AMD
+  - given-names: Tian Yue
+    family-names: Liu
+    email: TianYue.Liu@amd.com
+    affiliation: AMD
+  - given-names: Nathan
+    family-names: Hung
+    email: Nathan.Hung@amd.com
+    affiliation: AMD
+  - given-names: Mehdi
+    family-names: Saeedi
+    email: Mehdi.Saeedi@amd.com
+    affiliation: AMD
+repository-code: 'https://github.com/GPUOpen-LibrariesAndSDKs/Schola'
+url: 'https://gpuopen.com/amd-schola/'
+abstract: >-
+  Schola Examples is an Unreal Engine project containing sample environments developed 
+  with the Schola plugin for Unreal Engine. Schola provides tools to help developers create environments, 
+  define agents, and connect to python-based Reinforcement Learning frameworks such as OpenAI Gym, RLlib or Stable Baselines 3.
+keywords:
+  - Reinforcement Learning
+  - Unreal Engine 5
+  - Python
+license: MIT
+version: '1.1'
+date-released: '2025-04-01'

@@ -15,16 +15,62 @@ Visual Studio 2022 is available for download from [Microsoft](https://visualstud
 > **Note**  
 > Only MSVC v143 Build Tools should be selected during install including other build tools will cause linking errors. Sepcifically, use `MSVC14.X` where `X>34` from Visual Studio 2022, and `Windows 10.0.22621.0 SDK` to avoid linking errors
 
-
 ### Install Visual Studio Code (Optional)
 As Visual Studio is not supported on Linux, we recommend installing Visual Studio Code following the official guide for [Setting Up Visual Studio Code for Unreal Engine](https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-visual-studio-code-for-unreal-engine).
 
-### Cloning ScholaExamples
-ScholaExamples uses git-lfs as well as using git submodules to include the Schola plugin, both of which require additional setup.
-To install git-lfs you can follow the instructions on github [here](https://github.com/git-lfs/git-lfs?utm_source=gitlfs_site&utm_medium=installation_link&utm_campaign=gitlfs#installing)
-To clone the appropriate version of Schola alongside the ScholaExamples project use `git clone --recurse-submodules git@github.com:GPUOpen-LibrariesAndSDKs/ScholaExamples.git` or if you've already cloned without `--recurse-submodules` you can use the command `git submodule update --init --recursive`.
+### Install standalone Python package
+This installs the ScholaExamples environments as a standalone package
+```bash
+pip install schola-examples
+```
+
+## Usage
+
+### Direct Environment Import
+
+```python
+# OpenAI Gymnasium environments
+from schola_examples.gym import BallShooter, BallShooterVec 
+# Both environments are subclasses of gymnasium.vector.VectorEnv
+env = BallShooter()  # Single environment instance for sequential training
+env = BallShooterVec(headless_mode=True)  # Vectorized environment for parallel training
+
+# Stable-Baselines3 environments 
+from schola_examples.sb3 import BallShooter, BallShooterVec
+# Both environments are subclasses of stable_baselines3.common.vec_env.VecEnv
+env = BallShooter()  # Single environment instance
+env = BallShooterVec(headless_mode=True)  # Vectorized environment for parallel training
+
+# RLlib environments
+from schola_examples.ray import BallShooter, BallShooterVec
+# Both environments are subclasses of ray.rllib.env.base_env.BaseEnv
+env = BallShooter()  # Single environment instance 
+env = BallShooterVec(headless_mode=True)  # Vectorized environment for parallel training
+```
+
+### Using Gymnasium Factory
+
+```python
+import schola_examples
+import gymnasium
+
+# Creates a vectorized environment of class gymnasium.vector.VectorEnv using Gymnasium's make_vec factory
+env = gymnasium.make_vec("Schola/Basic-v0")
+```
+
+### Using RLlib Registry
+
+```python
+import schola_examples
+from ray.rllib.algorithms import ppo
+
+# Creates environment of class ray.rllib.env.base_env.BaseEnv from RLlib's built-in registry
+algo = ppo.PPO(env="Basic-V0")
+```
 
 ## Contributing
+
+## Contibuting Examples
 
 When adding new examples to ScholaExamples please follow the below naming scheme for your files and folders.
 
@@ -61,7 +107,7 @@ Content/
 
 ### Unreal Coding Style
 
-All unreal code is to be styled following the Unreal Style Guide in the [Unreal Documentation](https://docs.unrealengine.com/4.27/en-US/ProductionPipelines/DevelopmentSetup/CodingStandard/).
+All unreal code with be styled following the Unreal Style Guide in the [Unreal Documentation](https://docs.unrealengine.com/4.27/en-US/ProductionPipelines/DevelopmentSetup/CodingStandard/).
 
 One potential auto-formatter is the [Clang Formatter](https://github.com/TensorWorks/UE-Clang-Format) which has visual studio support.
 
