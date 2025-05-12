@@ -6,14 +6,14 @@ This project contains Example Environments for Schola. These can be used as a re
 
 ### Install Unreal Engine
 
-This project is designed for Unreal Engine 5.4+ which is available for [Download](https://www.unrealengine.com/en-US/download). It is tested on 5.4.3 and 5.4.4.
+Release 1.0 of this this project is designed for Unreal Engine 5.4 which is available for [Download](https://www.unrealengine.com/en-US/download) and is tested on 5.4.3 and 5.4.4. Release 1.1 supports Unreal Engine 5.5 (It is not compatible with Unreal Engine 5.4).
 
 ### Install Visual Studio
 
 Visual Studio 2022 is available for download from [Microsoft](https://visualstudio.microsoft.com/vs/). Additionally, details (and an additional plugin) for setting up Visual Studio with Unreal Engine are available in the [UE Docs](https://docs.unrealengine.com/4.26/en-US/ProductionPipelines/DevelopmentSetup/VisualStudioSetup/).
 
 > **Note**  
-> Only MSVC v143 Build Tools should be selected during install including other build tools will cause linking errors. Sepcifically, use `MSVC14.X` where `X>34` from Visual Studio 2022, and `Windows 10.0.22621.0 SDK` to avoid linking errors
+> Only MSVC v143 Build Tools should be selected during install including other build tools will cause linking errors. Specifically, use `MSVC14.X` where `X>34` from Visual Studio 2022, and `Windows 10.0.22621.0 SDK` to avoid linking errors
 
 ### Install Visual Studio Code (Optional)
 As Visual Studio is not supported on Linux, we recommend installing Visual Studio Code following the official guide for [Setting Up Visual Studio Code for Unreal Engine](https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-visual-studio-code-for-unreal-engine).

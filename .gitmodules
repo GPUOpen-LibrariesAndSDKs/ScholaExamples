@@ -1,3 +1,4 @@
 [submodule "Plugins/Schola"]
 	path = Plugins/Schola
 	url = ../Schola
+	branch = main

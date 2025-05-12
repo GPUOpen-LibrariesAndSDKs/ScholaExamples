@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: Schola
+title: ScholaExamples
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -22,7 +22,7 @@ authors:
     family-names: Saeedi
     email: Mehdi.Saeedi@amd.com
     affiliation: AMD
-repository-code: 'https://github.com/GPUOpen-LibrariesAndSDKs/Schola'
+repository-code: 'https://github.com/GPUOpen-LibrariesAndSDKs/ScholaExamples'
 url: 'https://gpuopen.com/amd-schola/'
 abstract: >-
   Schola Examples is an Unreal Engine project containing sample environments developed 
