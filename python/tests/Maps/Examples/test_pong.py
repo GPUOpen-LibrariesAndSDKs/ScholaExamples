@@ -2,7 +2,7 @@
 from .common import UnrealExample, VectorizedUnrealExample
 from ..common import make_ray_cast_space, make_camera_space
 from schola.core.spaces import DictSpace, BoxSpace, DiscreteSpace
-from .gym import AbstractTestGymExample, AbstractTestGymExampleDefinition
+from .gym import AbstractTestGymExample, AbstractTestGymExampleDefinition, AbstractTestVecGymExampleDefinition, AbstractTestIncompatibleGymExample
 from .sb3 import AbstractTestSB3Example, AbstractTestSB3ExampleDefinition
 from .rllib import AbstractTestRayExample, AbstractTestRayExampleDefinition
 
@@ -21,16 +21,14 @@ PongVecExample = VectorizedUnrealExample.from_unreal_example(PongExample,2)
 
 #Gym
 
-class TestPongGym(AbstractTestGymExample):
+class TestPongIncompatibleWithGym(AbstractTestIncompatibleGymExample):
     example = PongExample
 
 class TestPongVecGym(AbstractTestGymExample):
     example = PongVecExample
+    gym_class = "GymVectorEnv"
 
-class TestPongGymDefinition(AbstractTestGymExampleDefinition):
-    example = PongExample
-
-class TestPongVecGymDefinition(AbstractTestGymExampleDefinition):
+class TestPongVecGymDefinition(AbstractTestVecGymExampleDefinition):
     example = PongVecExample
 
 #SB3
@@ -61,6 +59,3 @@ class TestPongRLLibDefinition(AbstractTestRayExampleDefinition):
 class TestPongVecRLLibDefinition(AbstractTestRayExampleDefinition):
     example = PongVecExample
 
-
-
-    

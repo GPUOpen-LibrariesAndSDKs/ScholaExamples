@@ -52,9 +52,11 @@ TagVecExample = VectorizedUnrealExample.from_unreal_example(TagExample, 2)
 
 class TestTagGym(AbstractTestIncompatibleGymExample):
     example = TagExample
+    gym_class = "GymEnv"
 
 class TestTagVecGym(AbstractTestIncompatibleGymExample):
     example = TagVecExample
+    gym_class = "GymVectorEnv"
 
 #SB3
 

@@ -24,7 +24,7 @@ class AbstractTestSB3ExampleDefinition:
 
     @pytest.fixture(scope="class")
     def env(self, example_build_path_arg):
-        env = getattr(schola_examples.sb3, self.example.classname)(built_game_path = example_build_path_arg, headless_mode=True, display_logs=False)
+        env = getattr(schola_examples.sb3, self.example.classname)(built_game_path = example_build_path_arg, headless_mode=not self.example.requires_rendering, display_logs=False)
         yield env
         env.close()
     
@@ -41,7 +41,7 @@ class AbstractTestSB3ExampleDefinition:
 
 
 class AbstractTestSB3Example:
-    example=None
+    example : UnrealExample = None
 
     @pytest.fixture(scope="function")
     def make_env(self, example_build_path_arg):
@@ -70,7 +70,7 @@ class AbstractTestSB3Example:
                             disable_eval=True, 
                             launch_unreal=True,
                             executable_path=built_game_path,
-                            headless=True,
+                            headless=not self.example.requires_rendering,
                             timesteps=3000,
                             disable_script=True,
                             map=self.example.path)

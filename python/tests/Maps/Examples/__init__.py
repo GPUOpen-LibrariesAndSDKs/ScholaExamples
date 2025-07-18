@@ -38,16 +38,12 @@ ALL_EXAMPLES = [
 # All environments that can be converted to vectorized environments, including single agent environments, or multiagent environments where all agents
 # have the same observation/action space
 # use this for SB3 and Gym as they can't handle agents with different obs/action spaces
-VEC_COMPATIBLE_EXAMPLES = list(
+GYM_VEC_COMPATIBLE_EXAMPLES = list(
     filter(lambda x: not x.has_different_agents, ALL_EXAMPLES)
 )
 
-VEC_COMPATIBLE_VEC_EXAMPLES = list(
-    filter(lambda x: not x.has_different_agents, VECTORIZED_EXAMPLES)
-)
-
-VEC_COMPATIBLE_SINGLE_ENV_EXAMPLES = list(
-    filter(lambda x: not x.has_different_agents, SINGLE_ENV_EXAMPLES)
+GYM_COMPATIBLE_EXAMPLES = list(
+    filter(lambda x: not x.has_different_agents and x.total_num_agents == 1, ALL_EXAMPLES)
 )
 
 # Can use this for testing whether asserts are triggered notifying the user that the env is unsuported

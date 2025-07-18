@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright (c) 2024-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 
 import pytest
 import platform
@@ -11,10 +11,13 @@ import shutil
 from subprocess import CompletedProcess
 
 def pytest_addoption(parser):
+    # we use false/None's here to make the CLI the default, but if it isn't set it gets overridden by the ini
     parser.addoption("--use-existing-build", action="store", default=None, help="Use a premade build of ScholaExamples. Point to root of staging directory.")
     parser.addoption("--engine-path", action="store", default=None, help="The path to the Unreal Engine installation")
     parser.addoption("--use-schola-examples-build", action="store_true", default=False, help="Use the schola_examples python library as environment")
+    parser.addoption("--clean-build", action="store_true", default=False, help="Include the -clean flag in the build process")
     parser.addini("engine_path", help="The path to the Unreal Engine installation", default="C:/Program Files/Epic Games/UE_5.5")
+    parser.addini("clean_build", help="Include the -clean flag in the build process", default=False)
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "buildtest: mark test as validating some build property")
@@ -88,39 +91,45 @@ def preexisting_build(request):
     return Path(path_or_none) if path_or_none else None
 
 @pytest.fixture(scope="session")
-def cook_unreal(unreal_build_tool, project_dir, all_examples, all_test_levels, staging_dir, unreal_platform_name, preexisting_build):
-    #return a default completed process if we are using an existing build
+def clean_build(request) -> bool:
+    return request.config.getoption("--clean-build") or request.config.getini("clean_build")
+
+@pytest.fixture(scope="session")
+def cook_unreal(unreal_build_tool, project_dir, all_examples, all_test_levels, staging_dir, unreal_platform_name, preexisting_build, clean_build):
+    # Return a default completed process if we are using an existing build
     if preexisting_build:
         return CompletedProcess(args="No Args. Build completed in a different process", returncode=0)
     
-    #Get all the levels we need to package
+    # Get all the levels we need to package
     all_examples_paths = "+".join(map(lambda x: x.path, all_examples))
     all_tests_paths = "+".join(map(lambda x: x.path, all_test_levels))
     all_paths = all_examples_paths + "+" + all_tests_paths
     
     project_file = project_dir / "ScholaExamples.uproject"
-    #Note any maps we want to use here need to be added to the build via Project Settings>Packaging>Advanced>List of Maps...
+    # Note any maps we want to use here need to be added to the build via Project Settings>Packaging>Advanced>List of Maps...
     args = [unreal_build_tool, 
             "BuildCookRun", 
             "-build",
             "-cook",
             "-FastCook",
-            "-NoP4", #disable perforce
-            "-prereqs" #stage prerequisites
-            "-clean",
+            "-NoP4",  # Disable Perforce
+            "-prereqs",  # Stage prerequisites
+            # Conditionally include the -clean flag
+            "-clean" if clean_build else "",
             "-nocompile",
             "-nocompileuat",
-            #"-nocompileeditor",
+            # "-nocompileeditor",
             "-package",
             f"-project={project_file}", 
             f"-platform={unreal_platform_name}", 
             "-configuration=Development",
-            "-nodebuginfo",  #don't include debug info since we are going to be running headless
-            "-unattended", #automated process so don't add popups
+            "-nodebuginfo",  # Don't include debug info since we are going to be running headless
+            "-unattended",  # Automated process so don't add popups
             "-stage", 
-            f"-stagingdirectory={staging_dir}", #stage built files to a temporary directory
+            f"-stagingdirectory={staging_dir}",  # Stage built files to a temporary directory
             "-ForceMonolithic",
             f"-map={all_paths}"]
+    args = [arg for arg in args if arg]  # Remove empty arguments
     comp_process = subprocess.run(args, capture_output=True)
     return comp_process
 

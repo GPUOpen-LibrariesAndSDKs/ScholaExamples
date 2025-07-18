@@ -1,7 +1,7 @@
 # Copyright (c) 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 from .common import UnrealExample, VectorizedUnrealExample
 from schola.core.spaces import DictSpace, BoxSpace, DiscreteSpace
-from .gym import AbstractTestGymExample, AbstractTestGymExampleDefinition
+from .gym import AbstractTestGymExample, AbstractTestGymExampleDefinition, AbstractTestVecGymExampleDefinition
 from .sb3 import AbstractTestSB3Example, AbstractTestSB3ExampleDefinition
 from .rllib import AbstractTestRayExample, AbstractTestRayExampleDefinition
 
@@ -16,13 +16,14 @@ BasicVecExample = VectorizedUnrealExample.from_unreal_example(BasicExample, 2)
 class TestBasicGym(AbstractTestGymExample):
     example = BasicExample
 
-class TestBasicVecGym(AbstractTestGymExample):
-    example = BasicVecExample
-
 class TestBasicGymDefinition(AbstractTestGymExampleDefinition):
     example = BasicExample
 
-class TestBasicVecGymDefinition(AbstractTestGymExampleDefinition):
+class TestBasicVecGym(AbstractTestGymExample):
+    example = BasicVecExample
+    gym_class = "GymVectorEnv"
+
+class TestBasicVecGymDefinition(AbstractTestVecGymExampleDefinition):
     example = BasicVecExample
 
 #SB3

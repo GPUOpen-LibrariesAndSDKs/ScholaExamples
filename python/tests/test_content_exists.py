@@ -17,6 +17,7 @@ def test_inference_map_exists(project_dir, example):
     assert inference_map_path.exists(), f"{example.id} missing Inference Map. Expected .umap to exist at {inference_map_path}"
 
 def test_all_examples_have_tests(project_dir, all_examples):
+    # Filter out empty directories
     found_examples = set((x.name for x in (project_dir / "Content" / "Examples").iterdir()))
     expected_examples = set(map(lambda x: x.name, all_examples))
     assert len(found_examples - expected_examples) == 0, f"Not all Examples have tests. Please add tests for the following examples: {found_examples - expected_examples}"

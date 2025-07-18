@@ -2,7 +2,7 @@
 from .common import UnrealExample, VectorizedUnrealExample
 from ..common import make_ray_cast_space
 from schola.core.spaces import DictSpace, BoxSpace, DiscreteSpace
-from .gym import AbstractTestGymExample, AbstractTestGymExampleDefinition
+from .gym import AbstractTestGymExample, AbstractTestGymExampleDefinition, AbstractTestVecGymExampleDefinition
 from .sb3 import AbstractTestSB3Example, AbstractTestSB3ExampleDefinition
 from .rllib import AbstractTestRayExample, AbstractTestRayExampleDefinition
 
@@ -19,11 +19,12 @@ class TestMazeSolverGym(AbstractTestGymExample):
 
 class TestMazeSolverVecGym(AbstractTestGymExample):
     example = MazeSolverVecExample
+    gym_class = "GymVectorEnv"
 
 class TestMazeSolverGymDefinition(AbstractTestGymExampleDefinition):
     example = MazeSolverExample
 
-class TestMazeSolverVecGymDefinition(AbstractTestGymExampleDefinition):
+class TestMazeSolverVecGymDefinition(AbstractTestVecGymExampleDefinition):
     example = MazeSolverVecExample
 
 #sb3
