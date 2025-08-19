@@ -6,7 +6,7 @@ import subprocess
 from .Maps.Examples import ALL_EXAMPLES
 from .Maps.Tests import ALL_TEST_LEVELS
 from pathlib import Path
-from schola.core.unreal_connections import StandaloneUnrealConnection, UnrealConnection
+from schola.core.unreal_connections import StandaloneUnrealConnection, UnrealEditorConnection
 import shutil
 from subprocess import CompletedProcess
 
@@ -21,6 +21,7 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "buildtest: mark test as validating some build property")
+    config.addinivalue_line("markers", "serial: mark test to force run serially")
 
 def pytest_collection_modifyitems(config, items):
     if config.getoption("--use-existing-build") is None:
@@ -43,7 +44,7 @@ def all_test_levels():
 def make_unreal_connection(built_game_path):
     connections = []
     
-    def factory(example) -> UnrealConnection:
+    def factory(example) -> UnrealEditorConnection:
         connection = StandaloneUnrealConnection("localhost", built_game_path, headless_mode=True, map=example.path, display_logs=False, disable_script=True)
         connections.append(connection)
         return connection

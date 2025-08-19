@@ -6,7 +6,17 @@ This project contains Example Environments for Schola. These can be used as a re
 
 ### Install Unreal Engine
 
-Release 1.0 of this this project is designed for Unreal Engine 5.4 which is available for [Download](https://www.unrealengine.com/en-US/download) and is tested on 5.4.3 and 5.4.4. Release 1.1 supports Unreal Engine 5.5 (It is not compatible with Unreal Engine 5.4).
+As Schola examples is an Unreal Engine Project, you will need to first install Unreal Engine. Refer to the below table to identify the correct version of Unreal Engine for each version of Schola Examples. 
+
+>**Note**
+> Versions of Schola/ScholaExamples may be compatible with other Unreal Versions beyond the ones listed here, however these are the version(s) tested for each release.
+
+| Schola Examples Version | schola version | Unreal Version |
+| ----------------------- | -------------- | -------------- |
+| 1.3 | 1.3 | 5.5-5.6 |
+| 1.2 | 1.2 | 5.5 |
+| 1.1 | 1.1 | 5.5 |
+| 1.0 | 1.0 | 5.4 |
 
 ### Install Visual Studio
 
@@ -21,7 +31,7 @@ As Visual Studio is not supported on Linux, we recommend installing Visual Studi
 ### Install standalone Python package
 This installs the ScholaExamples environments as a standalone package
 ```bash
-pip install schola-examples
+pip install -e <path to ./python>
 ```
 
 ## Usage

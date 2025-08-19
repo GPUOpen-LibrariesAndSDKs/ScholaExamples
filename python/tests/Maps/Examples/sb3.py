@@ -40,6 +40,7 @@ class AbstractTestSB3ExampleDefinition:
         assert env.num_envs == self.example.total_num_agents, f"Incorrect Number of Sub-Environments. Expected:{self.example.total_num_agents} Got:{env.num_envs}"
 
 
+@pytest.mark.serial
 class AbstractTestSB3Example:
     example : UnrealExample = None
 

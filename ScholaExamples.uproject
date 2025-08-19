@@ -38,6 +38,10 @@
 		{
 			"Name": "NNERuntimeBasicCpu",
 			"Enabled": true
+		},
+		{
+			"Name": "FunctionalTestingEditor",
+			"Enabled": true
 		}
 	]
 }

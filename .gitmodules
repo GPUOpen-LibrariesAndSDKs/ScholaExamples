@@ -1,4 +1,4 @@
 [submodule "Plugins/Schola"]
 	path = Plugins/Schola
-	url = ../Schola
+	url = ../Schola.git
 	branch = main

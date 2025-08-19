@@ -27,6 +27,7 @@ def env_factory(built_game_path):
 
 # test with 1,3, and 5 environments
 @pytest.mark.parametrize("n_envs", [1,3,5], ids=lambda x: f"n_envs={x}")
+@pytest.mark.serial
 def test_train_basic(built_game_path, env_factory, n_envs):
 
     vec_env = make_vec_env(env_factory, n_envs=n_envs, seed=0)

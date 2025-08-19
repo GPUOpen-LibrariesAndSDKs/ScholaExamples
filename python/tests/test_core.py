@@ -1,11 +1,11 @@
-# Copyright (c) 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright (c) 2024-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 
 from schola.core.env import ScholaEnv
-from schola.core.unreal_connections import UnrealConnection, StandaloneUnrealConnection
+from schola.core.unreal_connections import UnrealEditorConnection, StandaloneUnrealConnection
 import pytest
 import grpc
 
-class MockUnrealConnection(UnrealConnection):
+class MockUnrealConnection(UnrealEditorConnection):
     
     def __init__(self):
         super().__init__("localhost",8000)
