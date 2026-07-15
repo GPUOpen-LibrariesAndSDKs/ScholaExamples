@@ -8,16 +8,9 @@ public class ScholaExamplesTarget : TargetRules
 	public ScholaExamplesTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V5;
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		
-		if (Target.Version.MajorVersion == 5 && Target.Version.MinorVersion >= 6)
-		{
-			IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-		}
-		else
-		{
-			IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_5;
-		}
+		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 
 		ExtraModuleNames.Add("ScholaExamples");
 		ExtraModuleNames.Add("RaceTrack");

@@ -1,11 +1,13 @@
 # Copyright (c) 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 
-from schola.core.unreal_connections import StandaloneUnrealConnection
-from schola.ray.env import BaseEnv
 import pytest
-from schola.scripts.ray.launch import main
-from schola.scripts.ray.settings import RLlibScriptArgs
-from schola.core.spaces import DictSpace, BoxSpace, DiscreteSpace
+from schola.scripts.common.settings import (
+    CheckpointSettings,
+    EnvironmentSettings,
+    UnrealExecutableSimulatorConfig,
+)
+from schola.scripts.rllib.train.settings import RllibScriptSettings, TrainingSettings
+from schola.scripts.rllib.train.train import main
 import numpy as np
 import gymnasium as gym
 from .Maps.Examples import ALL_EXAMPLES
@@ -15,15 +17,17 @@ from .Maps.Examples import ALL_EXAMPLES
 def test_train_basic(
     built_game_path,
 ):
-    args = RLlibScriptArgs(
-        enable_checkpoints=False,
-        launch_unreal=True,
-        unreal_path=built_game_path,
-        headless=True,
-        port=None,
-        disable_script=True,
-        timesteps=30000,
-        map="/Game/Examples/Basic/Maps/BasicTrain",
+    args = RllibScriptSettings(
+        training_settings=TrainingSettings(timesteps=30000),
+        checkpoint_settings=CheckpointSettings(enable_checkpoints=False),
+        environment_settings=EnvironmentSettings(
+            simulator_settings=UnrealExecutableSimulatorConfig(
+                executable_path=built_game_path,
+                headless=True,
+                map="/Game/Examples/Basic/Maps/BasicTrain",
+                disable_script=True,
+            )
+        ),
     )
     print("======= TRAINING OUTPUT =======")
     results = main(args)
@@ -41,15 +45,17 @@ def test_train_basic(
 @pytest.mark.skip("Takes too long")
 @pytest.mark.parametrize("example", ALL_EXAMPLES, ids=lambda x: x.id)
 def test_script_runs_on_example(built_game_path, example):
-    args = RLlibScriptArgs(
-        enable_checkpoints=False,
-        launch_unreal=True,
-        unreal_path=built_game_path,
-        headless=True,
-        port=None,
-        disable_script=True,
-        fps=200,
-        timesteps=3000,
-        map=example.path,
+    args = RllibScriptSettings(
+        training_settings=TrainingSettings(timesteps=3000),
+        checkpoint_settings=CheckpointSettings(enable_checkpoints=False),
+        environment_settings=EnvironmentSettings(
+            simulator_settings=UnrealExecutableSimulatorConfig(
+                executable_path=built_game_path,
+                headless=True,
+                map=example.path,
+                fps=200,
+                disable_script=True,
+            )
+        ),
     )
     main(args)

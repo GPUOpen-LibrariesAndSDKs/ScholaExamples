@@ -6,63 +6,114 @@ import subprocess
 from .Maps.Examples import ALL_EXAMPLES
 from .Maps.Tests import ALL_TEST_LEVELS
 from pathlib import Path
-from schola.core.unreal_connections import StandaloneUnrealConnection, UnrealEditorConnection
+from schola.core.protocols.protobuf.grpc_protocol import GrpcProtocol
+from schola.core.simulators.unreal.executable_simulator import UnrealExecutable
 import shutil
 from subprocess import CompletedProcess
 
+
 def pytest_addoption(parser):
     # we use false/None's here to make the CLI the default, but if it isn't set it gets overridden by the ini
-    parser.addoption("--use-existing-build", action="store", default=None, help="Use a premade build of ScholaExamples. Point to root of staging directory.")
-    parser.addoption("--engine-path", action="store", default=None, help="The path to the Unreal Engine installation")
-    parser.addoption("--use-schola-examples-build", action="store_true", default=False, help="Use the schola_examples python library as environment")
-    parser.addoption("--clean-build", action="store_true", default=False, help="Include the -clean flag in the build process")
-    parser.addini("engine_path", help="The path to the Unreal Engine installation", default="C:/Program Files/Epic Games/UE_5.5")
-    parser.addini("clean_build", help="Include the -clean flag in the build process", default=False)
+    parser.addoption(
+        "--use-existing-build",
+        action="store",
+        default=None,
+        help="Use a premade build of ScholaExamples. Point to root of staging directory.",
+    )
+    parser.addoption(
+        "--engine-path",
+        action="store",
+        default=None,
+        help="The path to the Unreal Engine installation",
+    )
+    parser.addoption(
+        "--use-schola-examples-build",
+        action="store_true",
+        default=False,
+        help="Use the schola_examples python library as environment",
+    )
+    parser.addoption(
+        "--clean-build",
+        action="store_true",
+        default=False,
+        help="Include the -clean flag in the build process",
+    )
+    parser.addini(
+        "engine_path",
+        help="The path to the Unreal Engine installation",
+        default="C:/Program Files/Epic Games/UE_5.7",
+    )
+    parser.addini(
+        "clean_build",
+        help="Include the -clean flag in the build process",
+        default=False,
+    )
+
 
 def pytest_configure(config):
-    config.addinivalue_line("markers", "buildtest: mark test as validating some build property")
+    config.addinivalue_line(
+        "markers", "buildtest: mark test as validating some build property"
+    )
     config.addinivalue_line("markers", "serial: mark test to force run serially")
+
 
 def pytest_collection_modifyitems(config, items):
     if config.getoption("--use-existing-build") is None:
-        pass #no existing build so we can do everything
+        pass  # no existing build so we can do everything
     else:
         skip_build_test = pytest.mark.skip(reason="Using Premade Build")
         for item in items:
             if "buildtest" in item.keywords:
                 item.add_marker(skip_build_test)
 
+
 @pytest.fixture(scope="session")
 def all_examples():
     return ALL_EXAMPLES.copy()
+
 
 @pytest.fixture(scope="session")
 def all_test_levels():
     return ALL_TEST_LEVELS.copy()
 
+
 @pytest.fixture
 def make_unreal_connection(built_game_path):
-    connections = []
-    
-    def factory(example) -> UnrealEditorConnection:
-        connection = StandaloneUnrealConnection("localhost", built_game_path, headless_mode=True, map=example.path, display_logs=False, disable_script=True)
-        connections.append(connection)
-        return connection
-    
+    components = []
+
+    def factory(example) -> tuple[UnrealExecutable, GrpcProtocol]:
+        simulator = UnrealExecutable(
+            executable_path=built_game_path,
+            headless_mode=not getattr(example, "requires_rendering", False),
+            map=example.path,
+            display_logs=False,
+            disable_script=True,
+        )
+        protocol = GrpcProtocol("localhost")
+        components.append((simulator, protocol))
+        return simulator, protocol
+
     yield factory
-    
-    for connection in connections:
-        connection.close()
+
+    for simulator, protocol in components:
+        protocol.close()
+        simulator.stop()
+
 
 @pytest.fixture(scope="session")
 def unreal_path(request) -> Path:
-    engine_path = request.config.getoption("--engine-path") if request.config.getoption("--engine-path") else request.config.getini("engine_path")
+    engine_path = (
+        request.config.getoption("--engine-path")
+        if request.config.getoption("--engine-path")
+        else request.config.getini("engine_path")
+    )
     return Path(engine_path)
+
 
 @pytest.fixture(scope="session")
 def unreal_build_tool(unreal_path) -> Path:
     script_name = "RunUAT.bat" if platform.system() == "Windows" else "RunUAT.sh"
-    return unreal_path / 'Engine' / 'Build' / 'BatchFiles' / script_name
+    return unreal_path / "Engine" / "Build" / "BatchFiles" / script_name
 
 
 @pytest.fixture(scope="session")
@@ -70,80 +121,118 @@ def project_dir(request) -> Path:
     fixture_path = Path(__file__)
     return fixture_path.parents[2].absolute()
 
+
 @pytest.fixture(scope="session")
 def staging_dir(tmp_path_factory) -> Path:
     return tmp_path_factory.getbasetemp() / "ScholaBuildStaging"
+
 
 @pytest.fixture(scope="session")
 def binary_filename() -> str:
     return "ScholaExamples.exe" if platform.system() == "Windows" else "ScholaExamples"
 
+
 @pytest.fixture(scope="session")
 def unreal_platform_name() -> str:
     return "Win64" if platform.system() == "Windows" else "Linux"
 
+
 @pytest.fixture(scope="session")
 def use_schola_examples_build(request) -> bool:
     return request.config.getoption("--use-schola-examples-build")
+
 
 @pytest.fixture(scope="session")
 def preexisting_build(request):
     path_or_none = request.config.option.use_existing_build
     return Path(path_or_none) if path_or_none else None
 
-@pytest.fixture(scope="session")
-def clean_build(request) -> bool:
-    return request.config.getoption("--clean-build") or request.config.getini("clean_build")
 
 @pytest.fixture(scope="session")
-def cook_unreal(unreal_build_tool, project_dir, all_examples, all_test_levels, staging_dir, unreal_platform_name, preexisting_build, clean_build):
+def clean_build(request) -> bool:
+    return request.config.getoption("--clean-build") or request.config.getini(
+        "clean_build"
+    )
+
+
+@pytest.fixture(scope="session")
+def cook_unreal(
+    unreal_build_tool,
+    project_dir,
+    all_examples,
+    all_test_levels,
+    staging_dir,
+    unreal_platform_name,
+    preexisting_build,
+    clean_build,
+):
     # Return a default completed process if we are using an existing build
     if preexisting_build:
-        return CompletedProcess(args="No Args. Build completed in a different process", returncode=0)
-    
+        return CompletedProcess(
+            args="No Args. Build completed in a different process", returncode=0
+        )
+
     # Get all the levels we need to package
     all_examples_paths = "+".join(map(lambda x: x.path, all_examples))
     all_tests_paths = "+".join(map(lambda x: x.path, all_test_levels))
     all_paths = all_examples_paths + "+" + all_tests_paths
-    
+
     project_file = project_dir / "ScholaExamples.uproject"
     # Note any maps we want to use here need to be added to the build via Project Settings>Packaging>Advanced>List of Maps...
-    args = [unreal_build_tool, 
-            "BuildCookRun", 
-            "-build",
-            "-cook",
-            "-FastCook",
-            "-NoP4",  # Disable Perforce
-            "-prereqs",  # Stage prerequisites
-            # Conditionally include the -clean flag
-            "-clean" if clean_build else "",
-            "-nocompile",
-            "-nocompileuat",
-            # "-nocompileeditor",
-            "-package",
-            f"-project={project_file}", 
-            f"-platform={unreal_platform_name}", 
-            "-configuration=Development",
-            "-nodebuginfo",  # Don't include debug info since we are going to be running headless
-            "-unattended",  # Automated process so don't add popups
-            "-stage", 
-            f"-stagingdirectory={staging_dir}",  # Stage built files to a temporary directory
-            "-ForceMonolithic",
-            f"-map={all_paths}"]
+    args = [
+        unreal_build_tool,
+        "BuildCookRun",
+        "-build",
+        "-cook",
+        "-FastCook",
+        "-NoP4",  # Disable Perforce
+        "-prereqs",  # Stage prerequisites
+        # Conditionally include the -clean flag
+        "-clean" if clean_build else "",
+        "-nocompile",
+        "-nocompileuat",
+        # "-nocompileeditor",
+        "-package",
+        f"-project={project_file}",
+        f"-platform={unreal_platform_name}",
+        "-configuration=Development",
+        "-nodebuginfo",  # Don't include debug info since we are going to be running headless
+        "-unattended",  # Automated process so don't add popups
+        "-stage",
+        f"-stagingdirectory={staging_dir}",  # Stage built files to a temporary directory
+        "-ForceMonolithic",
+        f"-map={all_paths}",
+    ]
     args = [arg for arg in args if arg]  # Remove empty arguments
-    comp_process = subprocess.run(args, capture_output=True)
+    comp_process = subprocess.run(args, capture_output=True, timeout=1800)
     return comp_process
 
+
 @pytest.fixture(scope="session")
-def built_game_path(cook_unreal, staging_dir, binary_filename, unreal_platform_name, preexisting_build, use_schola_examples_build):
+def built_game_path(
+    cook_unreal,
+    staging_dir,
+    binary_filename,
+    unreal_platform_name,
+    preexisting_build,
+    use_schola_examples_build,
+):
     if preexisting_build:
         staging_dir = preexisting_build
     if use_schola_examples_build:
         import schola_examples
+
         return Path(schola_examples.envs.built_game_path)
 
-    #Note: cook unreal is just here to make sure that content is cooked before you try and use the game path
+    # Note: cook unreal is just here to make sure that content is cooked before you try and use the game path
     os_name = "Windows" if platform.system() == "Windows" else "Linux"
-    built_game_path : Path = staging_dir / os_name / "ScholaExamples" / 'Binaries' / unreal_platform_name / binary_filename
+    built_game_path: Path = (
+        staging_dir
+        / os_name
+        / "ScholaExamples"
+        / "Binaries"
+        / unreal_platform_name
+        / binary_filename
+    )
 
     return built_game_path

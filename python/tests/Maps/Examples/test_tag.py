@@ -1,81 +1,108 @@
 # Copyright (c) 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 from .common import UnrealExample, VectorizedUnrealExample
 from ..common import make_ray_cast_space
-from schola.core.spaces import DictSpace, BoxSpace, DiscreteSpace
+from gymnasium.spaces import Box as BoxSpace, Dict as DictSpace
 from .gym import AbstractTestIncompatibleGymExample
 from .rllib import AbstractTestRayExample, AbstractTestRayExampleDefinition
 from .sb3 import AbstractTestIncompatibleSB3Example
+import numpy as np
 
-TagExample = UnrealExample.MultiAgent("Tag",
-                      {
-                          0:DictSpace({'Ray_Num_36_Deg_360,00_Max_2048,00_ECC_WorldStatic_Tags_Tagger_Coin': make_ray_cast_space(36,2,2048)}),
-                          1:DictSpace({
-                              'Ray_Num_36_Deg_360,00_Max_2048,00_ECC_WorldStatic_Tags_Runner_Tagger': make_ray_cast_space(36,2,2048),
-                              "RunnerSensor": BoxSpace(-50000.0,50000.0,shape=(4,)),
-                              "TeammateSensor 1": BoxSpace(-50000.0,50000.0,shape=(4,)),
-                              "TeammateSensor 2": BoxSpace(-50000.0,50000.0,shape=(4,))
-                          }),
-                          2: DictSpace({
-                              'Ray_Num_36_Deg_360,00_Max_2048,00_ECC_WorldStatic_Tags_Runner_Tagger': make_ray_cast_space(36,2,2048),
-                              "RunnerSensor": BoxSpace(-50000.0,50000.0,shape=(4,)),
-                              "TeammateSensor 1": BoxSpace(-50000.0,50000.0,shape=(4,)),
-                              "TeammateSensor 2": BoxSpace(-50000.0,50000.0,shape=(4,))
-                          }),
-                          3: DictSpace({
-                              'Ray_Num_36_Deg_360,00_Max_2048,00_ECC_WorldStatic_Tags_Runner_Tagger': make_ray_cast_space(36,2,2048),
-                              "RunnerSensor": BoxSpace(-50000.0,50000.0,shape=(4,)),
-                              "TeammateSensor 1": BoxSpace(-50000.0,50000.0,shape=(4,)),
-                              "TeammateSensor 2": BoxSpace(-50000.0,50000.0,shape=(4,))
-                          }),
-                      },
-                      {
-                          0:DictSpace({'MovementInput_X_0,00_1,00': BoxSpace(0.0,1.0),
-                                       'MovementInput_Y_-1,00_1,00': BoxSpace(-1.0,1.0),
-                          }),
-                          1:DictSpace({'MovementInput_X_0,00_1,00': BoxSpace(0.0,1.0),
-                                       'MovementInput_Y_-1,00_1,00': BoxSpace(-1.0,1.0),
-                          }),
-                          1:DictSpace({'MovementInput_X_0,00_1,00': BoxSpace(0.0,1.0),
-                                       'MovementInput_Y_-1,00_1,00': BoxSpace(-1.0,1.0),
-                          }),
-                          2:DictSpace({'MovementInput_X_0,00_1,00': BoxSpace(0.0,1.0),
-                                       'MovementInput_Y_-1,00_1,00': BoxSpace(-1.0,1.0),
-                          }),
-                          3:DictSpace({'MovementInput_X_0,00_1,00': BoxSpace(0.0,1.0),
-                                       'MovementInput_Y_-1,00_1,00': BoxSpace(-1.0,1.0),
-                          }),
-                      })
 
-TagVecExample = VectorizedUnrealExample.from_unreal_example(TagExample, 2)
+class TagVectorizedUnrealExample(VectorizedUnrealExample):
+    @property
+    def path(self) -> str:
+        return "/Game/Examples/Tag/Maps/TagTrainVec"
 
-#Gym
+    @property
+    def content_path(self) -> str:
+        return "Content/Examples/Tag/Maps/TagTrainVec.umap"
+
+
+TagExample = UnrealExample.MultiAgent(
+    "Tag",
+    {
+        "Runner0": DictSpace({"RayCastSensor": make_ray_cast_space(36, 1, 2048)}),
+        "Tagger0": DictSpace(
+            {
+                "RayCastSensor": make_ray_cast_space(36, 2, 2048),
+                "RunnerSensor": BoxSpace(-50000.0, 50000.0, shape=(4,)),
+                "TeammateSensor1": BoxSpace(-50000.0, 50000.0, shape=(4,)),
+                "TeammateSensor2": BoxSpace(-50000.0, 50000.0, shape=(4,)),
+            }
+        ),
+        "Tagger1": DictSpace(
+            {
+                "RayCastSensor": make_ray_cast_space(36, 2, 2048),
+                "RunnerSensor": BoxSpace(-50000.0, 50000.0, shape=(4,)),
+                "TeammateSensor1": BoxSpace(-50000.0, 50000.0, shape=(4,)),
+                "TeammateSensor2": BoxSpace(-50000.0, 50000.0, shape=(4,)),
+            }
+        ),
+        "Tagger2": DictSpace(
+            {
+                "RayCastSensor": make_ray_cast_space(36, 2, 2048),
+                "RunnerSensor": BoxSpace(-50000.0, 50000.0, shape=(4,)),
+                "TeammateSensor1": BoxSpace(-50000.0, 50000.0, shape=(4,)),
+                "TeammateSensor2": BoxSpace(-50000.0, 50000.0, shape=(4,)),
+            }
+        ),
+    },
+    {
+        "Runner0": DictSpace(
+            {"ForwardAxis": BoxSpace(0.0, 1.0), "LateralAxis": BoxSpace(-1.0, 1.0)}
+        ),
+        "Tagger0": DictSpace(
+            {"ForwardAxis": BoxSpace(0.0, 1.0), "LateralAxis": BoxSpace(-1.0, 1.0)}
+        ),
+        "Tagger1": DictSpace(
+            {"ForwardAxis": BoxSpace(0.0, 1.0), "LateralAxis": BoxSpace(-1.0, 1.0)}
+        ),
+        "Tagger2": DictSpace(
+            {"ForwardAxis": BoxSpace(0.0, 1.0), "LateralAxis": BoxSpace(-1.0, 1.0)}
+        ),
+    },
+)
+
+TagVecExample = TagVectorizedUnrealExample.from_unreal_example(TagExample, 2)
+
+# Gym
+
 
 class TestTagGym(AbstractTestIncompatibleGymExample):
     example = TagExample
     gym_class = "GymEnv"
 
+
 class TestTagVecGym(AbstractTestIncompatibleGymExample):
     example = TagVecExample
     gym_class = "GymVectorEnv"
 
-#SB3
+
+# SB3
+
 
 class TestTagSB3(AbstractTestIncompatibleSB3Example):
     example = TagExample
 
-class TestTagVecSB3(AbstractTestIncompatibleSB3Example):
-    example = TagExample
 
-#RLLib
+class TestTagVecSB3(AbstractTestIncompatibleSB3Example):
+    example = TagVecExample
+
+
+# RLLib
+
 
 class TestTagRLLib(AbstractTestRayExample):
     example = TagExample
 
+
 class TestTagVecRLLib(AbstractTestRayExample):
-    example = TagExample
+    example = TagVecExample
+
 
 class TestTagRLLibDefinition(AbstractTestRayExampleDefinition):
     example = TagExample
 
+
 class TestTagVecRLLibDefinition(AbstractTestRayExampleDefinition):
-    example = TagExample
+    example = TagVecExample

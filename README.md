@@ -13,6 +13,7 @@ As Schola examples is an Unreal Engine Project, you will need to first install U
 
 | Schola Examples Version | schola version | Unreal Version |
 | ----------------------- | -------------- | -------------- |
+| 2.1 | 2.1.x | 5.5-5.7 |
 | 1.3 | 1.3 | 5.5-5.6 |
 | 1.2 | 1.2 | 5.5 |
 | 1.1 | 1.1 | 5.5 |
@@ -20,10 +21,10 @@ As Schola examples is an Unreal Engine Project, you will need to first install U
 
 ### Install Visual Studio
 
-Visual Studio 2022 is available for download from [Microsoft](https://visualstudio.microsoft.com/vs/). Additionally, details (and an additional plugin) for setting up Visual Studio with Unreal Engine are available in the [UE Docs](https://docs.unrealengine.com/4.26/en-US/ProductionPipelines/DevelopmentSetup/VisualStudioSetup/).
+Visual Studio 2022 is available for download from [Microsoft](https://visualstudio.microsoft.com/vs/). Additionally, details (and an additional plugin) for setting up Visual Studio with Unreal Engine are available in the [UE Docs](https://dev.epicgames.com/documentation/unreal-engine/setting-up-visual-studio-development-environment-for-cplusplus-projects-in-unreal-engine).
 
 > **Note**  
-> Only MSVC v143 Build Tools should be selected during install including other build tools will cause linking errors. Specifically, use `MSVC14.X` where `X>34` from Visual Studio 2022, and `Windows 10.0.22621.0 SDK` to avoid linking errors
+> Only MSVC v143 Build Tools should be selected during install as including other build tools may cause linking errors. Please refer to the [Unreal Engine documentation](https://dev.epicgames.com/documentation/unreal-engine/programming-with-cplusplus-in-unreal-engine) to find the correct configuration for your engine version and computer.
 
 ### Install Visual Studio Code (Optional)
 As Visual Studio is not supported on Linux, we recommend installing Visual Studio Code following the official guide for [Setting Up Visual Studio Code for Unreal Engine](https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-visual-studio-code-for-unreal-engine).
@@ -117,7 +118,7 @@ Content/
 
 ### Unreal Coding Style
 
-All unreal code with be styled following the Unreal Style Guide in the [Unreal Documentation](https://docs.unrealengine.com/4.27/en-US/ProductionPipelines/DevelopmentSetup/CodingStandard/).
+All Unreal code will be styled following the Unreal Style Guide in the [Unreal Documentation](https://dev.epicgames.com/documentation/unreal-engine/epic-cplusplus-coding-standard-for-unreal-engine).
 
 One potential auto-formatter is the [Clang Formatter](https://github.com/TensorWorks/UE-Clang-Format) which has visual studio support.
 
@@ -129,4 +130,4 @@ This will enable autogeneration of stubs with ctrl + /, or whenever you type /\*
 
 ### Automated Testing
 
-Testing is implemented through pytests in Schola in `Resources/python/tests`. These tests build a fresh copy of both this project and Schola before running unit tests on Python + Unreal. This tests whether all examples run with each framework and are functional based on the API.
+Testing is implemented through pytests in `python/tests`. These tests build a fresh copy of this project and run unit tests on Python + Unreal. This tests whether all examples run with each framework and are functional based on the API.

@@ -7,8 +7,20 @@ public class ScholaExamples : ModuleRules
 	public ScholaExamples(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings","InputCore", "EnhancedInput", "RaceTrack" });
+
+		PublicDependencyModuleNames.AddRange(new string[] { "Core",
+			"CoreUObject",
+			"Engine",
+			"EngineSettings",
+			"InputCore",
+			"EnhancedInput",
+			"RaceTrack",
+			"Schola",
+			"ScholaNNE",
+			"ScholaInferenceUtils",
+			"ScholaTraining",
+			"NavigationSystem",
+			"NNE"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

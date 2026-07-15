@@ -2,36 +2,37 @@
 from dataclasses import dataclass
 from typing import Any, OrderedDict
 import pytest
-from schola.core.spaces import DictSpace, BoxSpace, DiscreteSpace, MultiBinarySpace
+from gymnasium.spaces import Dict as DictSpace
 import numpy as np
 
 from ..common import HasDefinitionMixin, to_pothole_case
 
+
 @dataclass
 class UnrealExample(HasDefinitionMixin):
-    name:str
+    name: str
     observation_space: OrderedDict[Any, DictSpace]
     action_space: OrderedDict[Any, DictSpace]
-    #number of environments in the vectorized Map
-    num_environments:int = 1
+    # number of environments in the vectorized Map
+    num_environments: int = 1
     requires_rendering: bool = False
-    
+
     @property
-    def path(self) ->str:
+    def path(self) -> str:
         return f"/Game/Examples/{self.name}/Maps/{self.name}Train"
 
     @property
-    def content_path(self) ->str:
+    def content_path(self) -> str:
         return f"Content/Examples/{self.name}/Maps/{self.name}Train.umap"
-    
+
     @property
     def inference_path(self):
         return f"/Game/Examples/{self.name}/Maps/{self.name}Inference"
-    
+
     @property
     def inference_content_path(self):
         return f"Content/Examples/{self.name}/Maps/{self.name}Inference.umap"
-    
+
     @property
     def id(self):
         return to_pothole_case(self.name)
@@ -39,34 +40,39 @@ class UnrealExample(HasDefinitionMixin):
     @property
     def classname(self):
         return self.name
-                
+
     def make_fixture(self):
-        return pytest.fixture(name=self.id)(lambda : self)
-    
+        return pytest.fixture(name=self.id)(lambda: self)
+
 
 @dataclass
 class VectorizedUnrealExample(UnrealExample):
     observation_space: DictSpace
     action_space: DictSpace
-    num_environments:int = 1
-   
-    
+    num_environments: int = 1
+
     @property
-    def path(self) ->str:
+    def path(self) -> str:
         return f"/Game/Examples/{self.name}/Maps/{self.name}VecTrain"
 
     @property
-    def content_path(self) ->str:
+    def content_path(self) -> str:
         return f"Content/Examples/{self.name}/Maps/{self.name}VecTrain.umap"
 
     @property
     def id(self):
         return to_pothole_case(self.name) + "_vectorized"
-    
+
     @property
     def classname(self):
         return f"{self.name}Vec"
 
     @classmethod
-    def from_unreal_example(cls, example:UnrealExample, num_environments:int):
-        return VectorizedUnrealExample(example.name, example.observation_space, example.action_space, num_environments, example.requires_rendering)
+    def from_unreal_example(cls, example: UnrealExample, num_environments: int):
+        return cls(
+            example.name,
+            example.observation_space,
+            example.action_space,
+            num_environments,
+            example.requires_rendering,
+        )

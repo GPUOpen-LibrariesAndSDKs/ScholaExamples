@@ -1,58 +1,91 @@
 # Copyright (c) 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 from .common import UnrealExample, VectorizedUnrealExample
 from ..common import make_ray_cast_space
-from schola.core.spaces import DictSpace, BoxSpace, DiscreteSpace
-from .gym import AbstractTestGymExample, AbstractTestGymExampleDefinition, AbstractTestVecGymExampleDefinition
+from gymnasium.spaces import Box as BoxSpace, Dict as DictSpace
+from .gym import (
+    AbstractTestGymExample,
+    AbstractTestGymExampleDefinition,
+    AbstractTestVecGymExampleDefinition,
+)
 from .sb3 import AbstractTestSB3Example, AbstractTestSB3ExampleDefinition
 from .rllib import AbstractTestRayExample, AbstractTestRayExampleDefinition
+import numpy as np
 
-MazeSolverExample = UnrealExample.SingleAgent("MazeSolver",
-            DictSpace({'Ray_Num_8_Deg_360,00_Max_4096,00_ECC_WorldStatic': make_ray_cast_space(8,0,4096)}),
-            DictSpace({'MovementInput_XY_-10,00_10,00': BoxSpace([-10.0,-10.0],[10.0,10.0])}))
+MazeSolverExample = UnrealExample.SingleAgent(
+    "MazeSolver",
+    DictSpace(
+        {
+            "Ray_Num_8_Deg_360,00_Max_4096,00_ECC_WorldStatic": make_ray_cast_space(
+                8, 0, 4096
+            )
+        }
+    ),
+    DictSpace(
+        {
+            "MovementInput_XY_-10_10": BoxSpace(
+                np.array([-10.0, -10.0]), np.array([10.0, 10.0])
+            )
+        }
+    ),
+)
 
-MazeSolverVecExample = VectorizedUnrealExample.from_unreal_example(MazeSolverExample, 16)
+MazeSolverVecExample = VectorizedUnrealExample.from_unreal_example(
+    MazeSolverExample, 16
+)
 
-#gym
+# gym
+
 
 class TestMazeSolverGym(AbstractTestGymExample):
     example = MazeSolverExample
+
 
 class TestMazeSolverVecGym(AbstractTestGymExample):
     example = MazeSolverVecExample
     gym_class = "GymVectorEnv"
 
+
 class TestMazeSolverGymDefinition(AbstractTestGymExampleDefinition):
     example = MazeSolverExample
+
 
 class TestMazeSolverVecGymDefinition(AbstractTestVecGymExampleDefinition):
     example = MazeSolverVecExample
 
-#sb3
+
+# sb3
+
 
 class TestMazeSolverSB3(AbstractTestSB3Example):
     example = MazeSolverExample
 
+
 class TestMazeSolverVecSB3(AbstractTestSB3Example):
     example = MazeSolverVecExample
+
 
 class TestMazeSolverSB3Definition(AbstractTestSB3ExampleDefinition):
     example = MazeSolverExample
 
+
 class TestMazeSolverVecSB3Definition(AbstractTestSB3ExampleDefinition):
     example = MazeSolverVecExample
 
-#RLLib
+
+# RLLib
+
 
 class TestMazeSolverRLLib(AbstractTestRayExample):
     example = MazeSolverExample
 
+
 class TestMazeSolverVecRLLib(AbstractTestRayExample):
     example = MazeSolverVecExample
+
 
 class TestMazeSolverRLLibDefinition(AbstractTestRayExampleDefinition):
     example = MazeSolverExample
 
+
 class TestMazeSolverVecRLLibDefinition(AbstractTestRayExampleDefinition):
     example = MazeSolverVecExample
-
-

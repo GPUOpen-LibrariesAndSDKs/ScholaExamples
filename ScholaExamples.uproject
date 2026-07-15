@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.5",
+	"EngineAssociation": "5.7",
 	"Category": "AI",
 	"Description": "Example Environments for training RL based NPCs with Schola",
 	"Modules": [
@@ -9,7 +9,9 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"Schola",
+				"ScholaInteractors"
 			]
 		},
 		{
@@ -19,6 +21,10 @@
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "Schola",
+			"Enabled": true
+		},
 		{
 			"Name": "ChaosVehiclesPlugin",
 			"Enabled": true

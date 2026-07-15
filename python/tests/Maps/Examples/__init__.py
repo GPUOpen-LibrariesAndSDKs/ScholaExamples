@@ -2,7 +2,7 @@
 
 from .test_pong import PongExample, PongVecExample
 from .test_threedball import ThreeDBallExample, ThreeDBallVecExample
-from .test_ballshooter import BallShooterExample
+from .test_ballshooter import BallShooterExample, BallShooterVecExample
 from .test_mazesolver import MazeSolverExample, MazeSolverVecExample
 from .test_tag import TagExample, TagVecExample
 from .test_basic import BasicExample, BasicVecExample
@@ -12,7 +12,7 @@ VECTORIZED_EXAMPLES = [
     BasicVecExample,
     PongVecExample,
     ThreeDBallVecExample,
-    # BallShooterVecExample,
+    BallShooterVecExample,
     MazeSolverVecExample,
     TagVecExample,
     RaceTrackVecExample,
@@ -43,7 +43,9 @@ GYM_VEC_COMPATIBLE_EXAMPLES = list(
 )
 
 GYM_COMPATIBLE_EXAMPLES = list(
-    filter(lambda x: not x.has_different_agents and x.total_num_agents == 1, ALL_EXAMPLES)
+    filter(
+        lambda x: not x.has_different_agents and x.total_num_agents == 1, ALL_EXAMPLES
+    )
 )
 
 # Can use this for testing whether asserts are triggered notifying the user that the env is unsuported

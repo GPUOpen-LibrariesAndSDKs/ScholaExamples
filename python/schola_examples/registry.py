@@ -1,27 +1,33 @@
 # Copyright (c) 2025 Advanced Micro Devices, Inc. All Rights Reserved.
-from typing import NamedTuple
-from schola.core.unreal_connections import StandaloneUnrealConnection
-import os  
+from schola.core.protocols.protobuf.grpc_protocol import GrpcProtocol
+from schola.core.simulators.unreal.executable_simulator import UnrealExecutable
+import os
 import platform
 
+
 class EnvRegistryEntry:
-    
-    def __init__(self,name,gym_compatible=True):
+
+    def __init__(
+        self, name, gym_compatible=True, train_map_name=None, vec_map_name=None
+    ):
         self.name = name
         self.gym_compat = gym_compatible
+        self.train_map_name = train_map_name or f"{name}Train"
+        self.vec_map_name = vec_map_name or f"{name}VecTrain"
 
     @property
     def path(self):
-        return f"/Game/Examples/{self.name}/Maps/{self.name}Train"
+        return f"/Game/Examples/{self.name}/Maps/{self.train_map_name}"
 
     @property
     def vec_path(self):
-        return f"/Game/Examples/{self.name}/Maps/{self.name}VecTrain"
+        return f"/Game/Examples/{self.name}/Maps/{self.vec_map_name}"
 
     @property
     def vec_name(self):
         return self.name + "-Vec"
-    
+
+
 class ScholaExamplesEnvRegistry:
     def __init__(self):
         self.registry = {
@@ -29,19 +35,33 @@ class ScholaExamplesEnvRegistry:
             "3DBall": EnvRegistryEntry("3DBall"),
             "BallShooter": EnvRegistryEntry("BallShooter"),
             "MazeSolver": EnvRegistryEntry("MazeSolver"),
-            "Pong": EnvRegistryEntry("Pong",gym_compatible=False),
+            "Pong": EnvRegistryEntry("Pong", gym_compatible=False),
             "RaceTrack": EnvRegistryEntry("RaceTrack"),
-            "Tag": EnvRegistryEntry("Tag",gym_compatible=False),
+            "Tag": EnvRegistryEntry(
+                "Tag", gym_compatible=False, vec_map_name="TagTrainVec"
+            ),
         }
         dir_path = os.path.dirname(os.path.realpath(__file__))
         os_name = "Windows" if platform.system() == "Windows" else "Linux"
-        entry_point_filename = "ScholaExamples" + (".exe" if platform.system() == "Windows" else ".sh")
-        self.built_game_path = os.path.join(dir_path, "bin", os_name, entry_point_filename)
+        entry_point_filename = "ScholaExamples" + (
+            ".exe" if platform.system() == "Windows" else ".sh"
+        )
+        self.built_game_path = os.path.join(
+            dir_path, "bin", os_name, entry_point_filename
+        )
 
-    def make_unreal_connection(self, path:str, port=None, headless_mode=False, set_fps=None, built_game_path=None, display_logs=False):  
+    def make_unreal_connection(
+        self,
+        path: str,
+        port=None,
+        headless_mode=False,
+        set_fps=None,
+        built_game_path=None,
+        display_logs=False,
+    ):
         """
-        Creates a new environment connection instance.
-        
+        Creates a simulator/protocol pair for a packaged Unreal environment.
+
         Parameters
         ----------
         path : str
@@ -59,23 +79,27 @@ class ScholaExamplesEnvRegistry:
 
         Returns
         -------
-        UnrealConnection
-            A new Unreal Engine connection.
+        tuple[UnrealExecutable, GrpcProtocol]
+            A simulator and protocol pair for the current Schola environment APIs.
         """
-        return StandaloneUnrealConnection(
-            url="localhost",
-            executable_path=built_game_path if built_game_path else self.built_game_path,
-            port=port,
-            headless_mode=headless_mode, 
-            map=path, 
+        simulator = UnrealExecutable(
+            executable_path=(
+                built_game_path if built_game_path else self.built_game_path
+            ),
+            headless_mode=headless_mode,
+            map=path,
             display_logs=display_logs,
             set_fps=set_fps,
-            disable_script=True)
+            disable_script=True,
+        )
+        protocol = GrpcProtocol("localhost", port)
+        return simulator, protocol
 
-    def all(self) -> EnvRegistryEntry:
+    def all(self) -> list[EnvRegistryEntry]:
         """
         Returns a list of all environment IDs.
         """
         return list(self.registry.values())
+
 
 envs = ScholaExamplesEnvRegistry()
